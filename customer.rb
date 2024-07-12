@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 class Customer
 
+  def initialize
+    @items = item_information
+  end
+
   def get_table_number
     obtain_table_number
   end
@@ -12,6 +16,7 @@ class Customer
   def get_items
     obtain_items
   end
+
 
   private
 
@@ -48,20 +53,26 @@ class Customer
   end
 
   def build_price_list(customer_items)
-    items = item_information
     price_array = Array.new
     customer_items.each do |k,v|
-      price = items[k]
+      price = @items[k]
       price_array << { k => ["number": v, "price": price] }
     end
     items_with_total = build_total(price_array)
     format_customer_items(items_with_total)
   end
 
-  def format_customer_items(price_array)
+  def build_total(items)
+    total = 0
+    items.each do |item|
+      total += (item.values[0][0][:price] * item.values[0][0][:number])
+    end
+    items << { 'Total' => total }
+  end
+
+  def format_customer_items(items_with_total)
     formatted_items = Array.new
-    price_array.each do |item|
-      p item.keys[0]
+    items_with_total.each do |item|
       if item.keys[0] == 'Total'
         formatted_items << item
         break
@@ -78,11 +89,4 @@ class Customer
     number < 10 ? number : raise('invalid number!')
   end
 
-  def build_total(items)
-    total = 0
-    items.each do |item|
-      total += item.values[0][0][:price]
-    end
-    items << { 'Total' => total.sprintf('%.2f') }
-  end
 end
