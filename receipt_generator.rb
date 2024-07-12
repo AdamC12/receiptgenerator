@@ -11,26 +11,26 @@ class ReceiptGenerator
   end
 
   def print_receipt
-    # table_number = get_table_number
-    # names = get_customer_names
+    table_number = get_table_number
+    names = get_customer_names
     price_list = get_customer_price_list
-    # timestamp = generate_timestamp
-    # puts "\n\n\n\n\n\n\n#{timestamp}"
-    # shopinformation = get_shop_information
-    # puts shopinformation['shopName']
-    # puts
-    # puts shopinformation['address']
-    # puts shopinformation['phone']
-    # puts
-    # puts 'Voucher 10% Off All Muffins!'
-    # puts "Valid #{Date.today.strftime('%d-%m-%Y')} to #{(Date.today+183).strftime('%d-%m-%Y')}"
-    # puts "Table: #{table_number} / [10]"
-    # puts names.join(',')
+    timestamp = generate_timestamp
+    puts "\n\n\n\n\n\n\n#{timestamp}"
+    shopinformation = get_shop_information
+    puts shopinformation['shopName']
+    puts
+    puts shopinformation['address']
+    puts shopinformation['phone']
+    puts
+    puts 'Voucher 10% Off All Muffins!'
+    puts "Valid #{Date.today.strftime('%d-%m-%Y')} to #{(Date.today+183).strftime('%d-%m-%Y')}"
+    puts "Table: #{table_number} / [10]"
+    puts names.join(',')
     binding.pry
-    # price_list.each do |item|
-    #   puts item
-    # end
-    # puts 'Thank you!'
+    price_list.each do |item|
+      puts item
+    end
+    puts 'Thank you!'
   end
 
   private
