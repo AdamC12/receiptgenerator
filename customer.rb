@@ -29,8 +29,13 @@ class Customer
   def obtain_items
     customer_items = Array.new
     items = item_information
-    loop do
-      puts 'Would you like to order an item?'
+    #understand why do |_, index| shows 0 as index in first loop, but |index| shows nil as the index for the first loop
+    loop.with_index do |_,index|
+      if index.zero?
+        puts 'Would you like to order an item?'
+      else
+        puts 'Would you like to order another item?'
+      end
       break unless gets.chomp.downcase == 'yes'
 
       puts 'Please enter your item'
@@ -39,12 +44,11 @@ class Customer
         puts 'item not valid'
         next
       end
-
-      customer_items << item
+      puts 'Please enter the amount'
+      number = gets.chomp
+      customer_items << {"item":item, "number": number}
     end
-
-    build_price_list(customer_items.tally)
-
+    build_price_list(customer_items)
   end
 
   def item_information
@@ -54,14 +58,13 @@ class Customer
 
   def build_price_list(customer_items)
     price_array = Array.new
-    customer_items.each do |k,v|
-      price = @items[k]
-      price_array << { k => ["number": v, "price": price] }
+    customer_items.each do |hash|
+      price = @items[hash[:item]]
+      price_array << { hash[:item] => ["number": hash[:number].to_i, "price": price] }
     end
     items_with_total = build_total(price_array)
     format_customer_items(items_with_total)
   end
-
   def build_total(items)
     total = 0
     items.each do |item|
