@@ -3,28 +3,32 @@
 require 'pry'
 require 'json'
 require 'date'
-require './customer.rb'
+require './create_order_through_cli.rb'
+require './price_calculator.rb'
+
 
 class ReceiptGenerator
   def initialize
-    @customer = Customer.new
+    # @customer = Customer.new
+    item_information
+    shop_information
+    @order = CreateOrderThroughCLI.new.call(@item_information)[0]
+    @price_list, @total, @tax = PriceCalculator.new.call(@order,@item_information)
   end
 
   def print_receipt
-    get_customer_information
     timestamp = generate_timestamp
     puts "\n\n\n\n\n\n\n#{timestamp}"
-    shopinformation = get_shop_information
-    puts shopinformation['shopName']
+    puts @shop_information['shopName']
     puts
-    puts shopinformation['address']
-    puts shopinformation['phone']
+    puts @shop_information['address']
+    puts @shop_information['phone']
     puts
     puts 'Voucher 10% Off All Muffins!'
     puts "Valid #{Date.today.strftime('%d-%m-%Y')} to #{(Date.today+183).strftime('%d-%m-%Y')}"
-    puts "Table: #{@table_number} / [10]"
-    puts @names.join(',')
-    @items.each do |item|
+    puts "Table: #{@order[:table]} / [10]"
+    puts @order[:names].join(',')
+    @price_list.each do |item|
       puts item
     end
     puts "Total:         #{@total.round(2)}"
@@ -38,20 +42,14 @@ class ReceiptGenerator
     Time.now.strftime('%Y.%m.%d %H:%M:%S')
   end
 
-  def get_shop_information
-    shop_information = File.read('./hipstercoffee.json')
-    JSON.parse(shop_information)
+  def shop_information
+    @shop_information ||= JSON.parse(File.read('./hipstercoffee.json'))
   end
 
-  def get_customer_information
-    @table_number = @customer.get_table_number
-    @names = @customer.get_names
-    @items = @customer.get_items
-    @total = @items.pop['Total']
-    @tax = @total * 0.0864
+  def item_information
+    @item_information ||= JSON.parse(File.read('./hipstercoffee.json'))['prices'][0]
   end
 end
 
 # irb -r ./receipt_generator.rb
 # ruby receipt_generator.rb
-
