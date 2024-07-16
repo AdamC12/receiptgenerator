@@ -1,31 +1,39 @@
 # frozen_string_literal: true
+require './price_calculator.rb'
+require './order.rb'
+
 class CreateOrderThroughCLI
-  def call(item_information)
-    build_order(item_information)
+
+  def initialize
+    @order = Order.new
+  end
+
+  def call
+    @order.table_number = ask_user_for_table_number
+    @order.names = ask_user_for_names
+    @order.items = ask_user_for_items
+    @order.generate_price_list(@order)
+    @order.generate_total(@order)
+    @order.calculate_tax(@order)
+    @order
   end
 
   private
 
-  def build_order(item_information)
-    order = []
-    order << {"table": table_number, "names": names, "items": items(item_information)}
-  end
-
-  def table_number
+  def ask_user_for_table_number
     puts 'Please enter your table number'
     number = gets.chomp.to_i
     number < 10 ? number : raise('invalid number!')
   end
 
-  def names
+  def ask_user_for_names
     puts 'Who is at the table?'
     list_of_names = gets.chomp
     list_of_names.split(', ')
   end
 
-  def items(item_information)
-    customer_items = Array.new
-    items = item_information
+  def ask_user_for_items
+    customer_items = []
     # understand why do |_, index| shows 0 as index in first loop, but |index| shows nil as the index for the first loop
     loop.with_index do |_, index|
       if index.zero?
@@ -37,7 +45,7 @@ class CreateOrderThroughCLI
 
       puts 'Please enter your item'
       item = gets.chomp
-      if items[item].nil?
+      unless @order.valid_item?(item)
         puts 'item not valid'
         next
       end
@@ -49,3 +57,5 @@ class CreateOrderThroughCLI
   end
 
 end
+
+
